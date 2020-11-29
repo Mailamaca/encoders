@@ -33,8 +33,8 @@ ament_target_dependencies(encoders_component
   "rclcpp_components"
   "maila_msgs"
   )
-rclcpp_components_register_nodes(encoders_component "encoders::Encoders")
-set(node_plugins "${node_plugins}encoders::Encoders;$<TARGET_FILE:encoders_component>\n")
+rclcpp_components_register_nodes(encoders_component "encoders::EncodersComponent")
+set(node_plugins "${node_plugins}encoders::EncodersComponent;$<TARGET_FILE:encoders_component>\n")
 
 # since the package installs libraries without exporting them
 # it needs to make sure that the library path is being exported

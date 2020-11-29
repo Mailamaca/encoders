@@ -34,16 +34,10 @@ def generate_launch_description():
                     plugin='i2c_server::I2CServer',
                     name='custom_i2c_server'),
                 ComposableNode(
-                    package='joystick_command',
-                    plugin='motor::JoystickCommand',
-                    name='custom_joystick_command',
-                    parameters = [os.path.join(get_package_share_directory('joystick_command'),"config","defaults.yaml")]),
-                ComposableNode(
-                    package='motors_interface',
-                    plugin='motor::MotorComponent',
-                    name='custom_motors_interface',
-                    parameters = [os.path.join(get_package_share_directory('motors_interface'),"config","defaults.yaml")])
-                    #parameters=[{'topics.in_mode':"cucu"}])
+                    package='encoders',
+                    plugin='encoders::EncodersComponent',
+                    name='custom_encoders',
+                    parameters = [os.path.join(get_package_share_directory('encoders'),"config","defaults.yaml")])
             ],
             output='screen',
             emulate_tty=True,

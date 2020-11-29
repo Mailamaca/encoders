@@ -11,7 +11,7 @@ namespace encoders
 {
 
 EncodersComponent::EncodersComponent(const rclcpp::NodeOptions & options)
-: Node("Encoders", options) {
+: Node("EncodersComponent", options) {
   RCLCPP_INFO( this->get_logger(), "EncodersComponent::EncodersComponent");
 
   load_parameters();    
@@ -118,15 +118,45 @@ void EncodersComponent::read_cb(std::shared_ptr<i2c_interfaces::srv::I2cCommand:
   }  
   
   int idx = 0;
-  uint32_t micros = ((uint32_t)response->data_received.at(idx++) << 24) |
-                    ((uint32_t)response->data_received.at(idx++) << 16) |
-                    ((uint32_t)response->data_received.at(idx++) <<  8) |
-                    ((uint32_t)response->data_received.at(idx++) <<  0);
+
+  /*RCLCPP_INFO( this->get_logger(),
+              "\nbuffer: %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x %02x",
+               response->data_received.at(0),
+               response->data_received.at(1),
+               response->data_received.at(2),
+               response->data_received.at(3),
+               response->data_received.at(4),
+               response->data_received.at(5),
+               response->data_received.at(6),
+               response->data_received.at(7),
+               response->data_received.at(8),
+               response->data_received.at(9),
+               response->data_received.at(10),
+               response->data_received.at(11),
+               response->data_received.at(12),
+               response->data_received.at(13));*/
+
+
+  uint32_t micros = ((uint32_t)response->data_received.at(idx+0) <<  0) |
+                    ((uint32_t)response->data_received.at(idx+1) <<  8) |
+                    ((uint32_t)response->data_received.at(idx+2) << 16) |
+                    ((uint32_t)response->data_received.at(idx+3) << 24);
+  idx += 4;
+  if ((int32_t)micros < 0) {
+    RCLCPP_WARN( this->get_logger(), "micros: %d", micros);
+  } /*else {
+    RCLCPP_INFO( this->get_logger(), "micros: %d", micros);
+  }*/
+  
         
   std::vector<maila_msgs::msg::Encoder> encoders_vect;
   for (int i =0; i < ESP32_ENC_NUMS; i++) {
-    uint16_t tk_enc = ((uint16_t)response->data_received.at(idx++) << 8) |
-                      ((uint16_t)response->data_received.at(idx++) << 0);
+    uint16_t tk_enc = ((uint16_t)response->data_received.at(idx+0) << 0) |
+                      ((uint16_t)response->data_received.at(idx+1) << 8);
+    idx += 2;
+    if (i==0) {                  
+      //RCLCPP_INFO( this->get_logger(), "tk_enc: %d", tk_enc);
+    }
     encoders_vect.push_back(encoderCalculation(i, tk_enc, micros));  
   }
   
